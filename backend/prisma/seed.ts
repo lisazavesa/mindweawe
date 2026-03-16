@@ -9,34 +9,35 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-
   await prisma.relation.deleteMany()
   await prisma.topic.deleteMany()
 
   const topics = await prisma.topic.createManyAndReturn({
     data: [
       // Backend
-      { title: "Backend Development", isCore: true, domain: "backend", difficulty: 1 },
-      { title: "JavaScript", domain: "backend", difficulty: 1 },
-      { title: "TypeScript", domain: "backend", difficulty: 1 },
-      { title: "Node.js", domain: "backend", difficulty: 1 },
-      { title: "NestJS", domain: "backend", difficulty: 2 },
-      { title: "Express", domain: "backend", difficulty: 1 },
-      { title: "Databases", domain: "backend", difficulty: 1 },
-      { title: "PostgreSQL", domain: "backend", difficulty: 1 },
+      { title: "Backend Development", isCore: true, domain: "backend", difficulty: 1, description: "Общее введение в серверную разработку" },
+      { title: "JavaScript", domain: "backend", difficulty: 1, description: "Основной язык для backend на Node.js" },
+      { title: "TypeScript", domain: "backend", difficulty: 1, description: "Статическая типизация для JavaScript" },
+      { title: "Node.js", domain: "backend", difficulty: 1, description: "Серверный runtime для JavaScript" },
+      { title: "NestJS", domain: "backend", difficulty: 2, description: "Фреймворк для построения масштабируемого backend" },
+      { title: "Express", domain: "backend", difficulty: 1, description: "Минималистичный web-фреймворк для Node.js" },
+      { title: "Databases", domain: "backend", difficulty: 1, description: "Основы работы с базами данных" },
+      { title: "PostgreSQL", domain: "backend", difficulty: 1, description: "Популярная реляционная база данных" },
 
       // Frontend
-      { title: "Frontend Development", isCore: true, domain: "frontend", difficulty: 1 },
-      { title: "HTML", domain: "frontend", difficulty: 1 },
-      { title: "CSS", domain: "frontend", difficulty: 1 },
-      { title: "React", domain: "frontend", difficulty: 2 },
-      { title: "Vue.js", domain: "frontend", difficulty: 2 },
-      { title: "TypeScript (Frontend)", domain: "frontend", difficulty: 1 },
-      { title: "Webpack", domain: "frontend", difficulty: 2 },
+      { title: "Frontend Development", isCore: true, domain: "frontend", difficulty: 1, description: "Общее введение во фронтенд" },
+      { title: "HTML", domain: "frontend", difficulty: 1, description: "Язык разметки веб-страниц" },
+      { title: "CSS", domain: "frontend", difficulty: 1, description: "Каскадные таблицы стилей для веба" },
+      { title: "React", domain: "frontend", difficulty: 2, description: "Библиотека для построения UI" },
+      { title: "Vue.js", domain: "frontend", difficulty: 2, description: "Прогрессивный фреймворк для UI" },
+      { title: "TypeScript (Frontend)", domain: "frontend", difficulty: 1, description: "TypeScript для фронтенд проектов" },
+      { title: "Webpack", domain: "frontend", difficulty: 2, description: "Сборщик модулей для фронтенда" },
 
       // Shared / Overlaps
-      { title: "HTTP", domain: "shared", difficulty: 1 },
-      { title: "REST API", domain: "shared", difficulty: 1 },
+      { title: "HTTP", domain: "shared", difficulty: 1, description: "Протокол передачи данных в интернете" },
+      { title: "REST API", domain: "shared", difficulty: 1, description: "Стиль архитектуры веб-сервисов" },
+      { title: "GraphQL", domain: "shared", difficulty: 2, description: "Запросы данных с гибкой схемой" },
+      { title: "WebSockets", domain: "shared", difficulty: 2, description: "Двусторонняя связь между клиентом и сервером" },
     ]
   })
 
@@ -66,10 +67,12 @@ async function main() {
       { sourceId: map["React"], targetId: map["HTTP"], type: RelationType.RECOMMENDED },
       { sourceId: map["TypeScript"], targetId: map["TypeScript (Frontend)"], type: RelationType.RECOMMENDED },
       { sourceId: map["REST API"], targetId: map["HTTP"], type: RelationType.NECESSARY },
+      { sourceId: map["REST API"], targetId: map["GraphQL"], type: RelationType.RECOMMENDED },
+      { sourceId: map["REST API"], targetId: map["WebSockets"], type: RelationType.RECOMMENDED },
     ]
   })
 
-  console.log("🌱 Large graph with frontend seed completed")
+  console.log("🌱 Expanded graph with frontend & descriptions seed completed")
 }
 
 main().finally(() => prisma.$disconnect())

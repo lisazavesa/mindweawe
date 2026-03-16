@@ -36,4 +36,21 @@ export class TopicsService {
             }))
         } 
     }
+
+    async getTopicRelations(id: number, domain?: string) {
+        const topic = await this.getTopicById(id)
+
+        const filterDomain = (t: any) => !domain || t.domain === domain;
+
+        const necessary = topic.targetRelations
+        .map(n => n.source)
+        .filter(filterDomain)
+        
+        
+        const recommended = topic.sourceRelations
+        .map(r => r.target)
+        .filter(filterDomain)
+
+        return { necessary, recommended }
+    }
 }
