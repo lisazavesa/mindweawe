@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { GraphService } from './graph.service';
 
 @Controller('graph')
@@ -10,3 +10,4 @@ export class GraphController {
         return this.graphService.getGraph()
     }
 }
+

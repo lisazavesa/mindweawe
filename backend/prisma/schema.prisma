@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,6 +12,10 @@ model Topic {
   description String?
   createdAt   DateTime @default(now())
 
+  domain     String?
+  difficulty Int?
+  isCore     Boolean @default(false)
+
   sourceRelations Relation[] @relation("SourceTopic")
   targetRelations Relation[] @relation("TargetTopic")
 }
@@ -27,6 +26,14 @@ model Relation {
   sourceId Int
   targetId Int
 
+  type RelationType @default(NECESSARY)
+
   source Topic @relation("SourceTopic", fields: [sourceId], references: [id])
   target Topic @relation("TargetTopic", fields: [targetId], references: [id])
+}
+
+enum RelationType {
+  NECESSARY
+  RECOMMENDED
+  RELATED
 }

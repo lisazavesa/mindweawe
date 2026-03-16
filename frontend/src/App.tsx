@@ -8,17 +8,20 @@ function App() {
 
   useEffect(() => {
     axios.get("http://localhost:3000/graph").then((res) => {
-      console.log(res.data)
       setNodes(res.data.nodes)
       setEdges(res.data.edges)
     })
   }, [])
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "#0f172a" }}>
       <GraphCanvas
         nodes={nodes}
         edges={edges}
+        draggable
+        layoutType="forceDirected2d"
+        edgeInterpolation="curved"
+        cameraMode="pan"
       />
     </div>
   )
