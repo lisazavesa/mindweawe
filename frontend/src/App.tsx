@@ -39,6 +39,9 @@ function App() {
         cameraMode="pan"
         // nodeLabel={(node) => node.title} // показываем название узла
         onNodeClick={handleNodeClick} // обработчик клика
+        edgeArrowPosition="none" 
+
+        
       />
 
       {selectedTopic && (
