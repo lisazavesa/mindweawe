@@ -17,4 +17,9 @@ export class TopicsController {
 	) {
 		return this.topicsService.getTopicRelations(id, domain);
 	}
+
+	@Get()
+	getTopicsByDomain(@Query('domain') domain?: string) {
+		return this.topicsService.getTopicsByDomain(domain);
+	}
 }

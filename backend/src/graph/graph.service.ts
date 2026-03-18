@@ -25,6 +25,45 @@ export class GraphService {
         return { nodes, edges };
     }
 
+    async getGraphByTopic(id: number) {
+        const topic = await this.prisma.topic.findUnique({
+            where: { id },
+            include: {
+                sourceRelations: {
+                    include: { target: true },
+                },
+                targetRelations: {
+                    include: { source: true },
+                }
+            },
+        })
+
+        if (!topic) {
+            throw new NotFoundException(`Topic with id ${id} not found`);
+        }
+
+        const outgoing = topic.sourceRelations.map(r => ({
+            id: r.target.id,
+            title: r.target.title,
+            type: r.type
+        }))
+
+        const incoming = topic.targetRelations.map(r => ({
+            id: r.source.id,
+            title: r.source.title,
+            type: r.type
+        }))
+        
+        return {
+            center: {
+                id: topic.id,
+                title: topic.title
+            },
+            outgoing,
+            incoming
+        }
+    }
+
     /* добавить
     
     поиск связей 

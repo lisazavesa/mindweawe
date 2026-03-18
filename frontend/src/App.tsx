@@ -35,10 +35,9 @@ function App() {
         edges={edges}
         draggable
         layoutType="forceDirected2d"
-        edgeInterpolation="curved"
+        edgeInterpolation="linear"
         cameraMode="pan"
-        // nodeLabel={(node) => node.title} // показываем название узла
-        onNodeClick={handleNodeClick} // обработчик клика
+        onNodeClick={handleNodeClick} 
         edgeArrowPosition="none" 
 
         

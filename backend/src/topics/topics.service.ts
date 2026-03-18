@@ -40,7 +40,7 @@ export class TopicsService {
     async getTopicRelations(id: number, domain?: string) {
         const topic = await this.getTopicById(id);
 
-        const filterDomain = (t: any) => !domain || t.domain === domain;
+        const filterDomain = (t) => !domain || t.domain === domain;
 
         // 🔴 NECESSARY (входящие связи)
         const necessary = topic.targetRelations
@@ -71,5 +71,25 @@ export class TopicsService {
             }));
 
         return { necessary, related };
+    }
+
+    async getTopicsByDomain (domain?: string) {
+        const topics = await this.prisma.topic.findMany({
+            where: domain ? { domain } : {}
+        })
+
+        return topics
+
+        // return {
+        //     topics,
+        //     include: {
+        //         sourceRelations: {
+        //             include: { target: true },
+        //         },
+        //         targetRelations: {
+        //             include: { source: true },
+        //         },
+        //     },
+        // }
     }
 }
