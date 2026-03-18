@@ -1,5 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { GraphService } from './graph.service';
+import { GetGraphByTopicDto } from './dto/get-graph-by-topic.dto';
 
 @Controller('graph')
 export class GraphController {
@@ -13,8 +14,8 @@ export class GraphController {
     }
 
     @Get(':id')
-    getGraphByTopic(@Param('id', ParseIntPipe) id: number ) {
-        return this.graphService.getGraphByTopic(id)
+    getGraphByTopic(@Param() params: GetGraphByTopicDto) {
+        return this.graphService.getGraphByTopic(params.id)
     }
 
 }

@@ -79,17 +79,5 @@ export class TopicsService {
         })
 
         return topics
-
-        // return {
-        //     topics,
-        //     include: {
-        //         sourceRelations: {
-        //             include: { target: true },
-        //         },
-        //         targetRelations: {
-        //             include: { source: true },
-        //         },
-        //     },
-        // }
     }
 }

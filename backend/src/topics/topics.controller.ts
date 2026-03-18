@@ -1,25 +1,28 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { TopicsService } from './topics.service';
+import { Controller, Get, Param, ParseIntPipe, Query } from "@nestjs/common";
+import { TopicsService } from "./topics.service";
+import { GetTopicDto } from "./dto/get-topic.dto";
+import { GetTopicsByDomain } from "./dto/get-topics-by-domain.dto";
+import { GetTopicRelationsDto } from "./dto/get-topic-relations.dto";
 
-@Controller('topics')
+@Controller("topics")
 export class TopicsController {
-	constructor(private topicsService: TopicsService) {}
+    constructor(private topicsService: TopicsService) {}
 
-	@Get(':id')
-	getTopicById(@Param('id', ParseIntPipe) id: number) {
-		return this.topicsService.getTopicById(id);
-	}
+    @Get(":id")
+    getTopicById(@Param() params: GetTopicDto) {
+        return this.topicsService.getTopicById(params.id);
+    }
 
-	@Get(':id/relations')
-	getTopicPelations(
-		@Param('id', ParseIntPipe) id: number,
-		@Query('domain') domain?: string,
-	) {
-		return this.topicsService.getTopicRelations(id, domain);
-	}
+    @Get(":id/relations")
+    getTopicPelations(
+        @Param() params: GetTopicDto,
+        @Query() query: GetTopicRelationsDto,
+    ) {
+        return this.topicsService.getTopicRelations(params.id, query.domain);
+    }
 
-	@Get()
-	getTopicsByDomain(@Query('domain') domain?: string) {
-		return this.topicsService.getTopicsByDomain(domain);
-	}
+    @Get()
+    getTopicsByDomain(@Query() query: GetTopicsByDomain) {
+        return this.topicsService.getTopicsByDomain(query.domain);
+    }
 }

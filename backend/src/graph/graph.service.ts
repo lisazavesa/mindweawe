@@ -63,12 +63,4 @@ export class GraphService {
             incoming
         }
     }
-
-    /* добавить
-    
-    поиск связей 
-    соседние темы GET /topics/1/neighbors
-    добавление новой связи POST /relations
-    
-    */
 }

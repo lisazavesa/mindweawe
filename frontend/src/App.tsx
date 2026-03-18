@@ -14,54 +14,127 @@ function App() {
   const [nodes, setNodes] = useState<any[]>([])
   const [edges, setEdges] = useState<any[]>([])
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null)
+  const [isSubgraph, setIsSubgraph] = useState(false)
+
+  const loadFullGraph = async () => {
+    const res = await axios.get("http://localhost:3000/graph")
+    setNodes(res.data.nodes)
+    setEdges(res.data.edges)
+    setIsSubgraph(false)
+    setSelectedTopic(null)
+  }
 
   useEffect(() => {
-    axios.get("http://localhost:3000/graph").then((res) => {
-      setNodes(res.data.nodes)
-      setEdges(res.data.edges)
-    })
+    loadFullGraph()
   }, [])
 
-  const handleNodeClick = (node: any) => {
-    axios.get(`http://localhost:3000/topics/${node.id}`).then((res) => {
-      setSelectedTopic(res.data)
-    })
+  const handleNodeClick = async (node: any) => {
+    try {
+      // 📦 тема
+      const topicRes = await axios.get(`http://localhost:3000/topics/${node.id}`)
+      setSelectedTopic(topicRes.data)
+
+      // 📦 подграф
+      const graphRes = await axios.get(`http://localhost:3000/graph/${node.id}`)
+      const { center, outgoing, incoming } = graphRes.data
+
+      const newNodes = [
+        {
+          id: String(center.id),
+          label: center.title,
+          size: 30,
+        },
+        ...outgoing.map((t: any) => ({
+          id: String(t.id),
+          label: t.title,
+          size: 12,
+        })),
+        ...incoming.map((t: any) => ({
+          id: String(t.id),
+          label: t.title,
+          size: 12,
+        })),
+      ]
+
+      const uniqueNodes = Array.from(
+        new Map(newNodes.map((n) => [n.id, n])).values()
+      )
+
+      const newEdges = [
+        ...outgoing.map((t: any) => ({
+          id: `${center.id}-${t.id}`,
+          source: String(center.id),
+          target: String(t.id),
+        })),
+        ...incoming.map((t: any) => ({
+          id: `${t.id}-${center.id}`,
+          source: String(t.id),
+          target: String(center.id),
+        })),
+      ]
+
+      setNodes(uniqueNodes)
+      setEdges(newEdges)
+      setIsSubgraph(true)
+    } catch (e) {
+      console.error("Ошибка при загрузке подграфа", e)
+    }
   }
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#0f172a", position: "relative" }}>
-      <GraphCanvas
-        nodes={nodes}
-        edges={edges}
-        draggable
-        layoutType="forceDirected2d"
-        edgeInterpolation="linear"
-        cameraMode="pan"
-        onNodeClick={handleNodeClick} 
-        edgeArrowPosition="none" 
-
+    <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+      
+      {/* 🔵 ГРАФ */}
+      <div style={{ flex: 1, background: "#0f172a", position: "relative" }}>
         
-      />
+        {isSubgraph && (
+          <button
+            onClick={loadFullGraph}
+            style={{
+              position: "absolute",
+              top: 20,
+              left: 20,
+              padding: "10px",
+              background: "#ffffff",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              zIndex: 10,
+            }}
+          >
+            ← Назад к графу
+          </button>
+        )}
 
+        <GraphCanvas
+          nodes={nodes}
+          edges={edges}
+          draggable
+          layoutType="forceDirected2d"
+          edgeInterpolation="linear"
+          cameraMode="pan"
+          onNodeClick={handleNodeClick}
+          edgeArrowPosition="none"
+          nodeSize={(node) => node.size}
+        />
+      </div>
+
+      {/* 🟡 БОКОВАЯ ПАНЕЛЬ */}
       {selectedTopic && (
         <div
           style={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            width: 300,
+            width: 350,
             padding: 20,
             background: "#ffffff",
-            color: "#000000",
-            borderRadius: 8,
-            boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-            zIndex: 10,
+            color: "#000",
+            borderLeft: "1px solid #ddd",
+            overflowY: "auto",
           }}
         >
-          <h3>{selectedTopic.title}</h3>
+          <h2>{selectedTopic.title}</h2>
           <p>{selectedTopic.description || "Описание отсутствует"}</p>
 
-          {selectedTopic.necessary && selectedTopic.necessary.length > 0 && (
+          {selectedTopic.necessary?.length > 0 && (
             <div>
               <strong>Обязательные темы:</strong>
               <ul>
@@ -72,7 +145,7 @@ function App() {
             </div>
           )}
 
-          {selectedTopic.recommended && selectedTopic.recommended.length > 0 && (
+          {selectedTopic.recommended?.length > 0 && (
             <div>
               <strong>Рекомендуемые темы:</strong>
               <ul>
@@ -86,13 +159,13 @@ function App() {
           <button
             onClick={() => setSelectedTopic(null)}
             style={{
-              marginTop: 10,
-              padding: "5px 10px",
-              borderRadius: 4,
+              marginTop: 20,
+              padding: "8px 12px",
+              borderRadius: 6,
               border: "none",
-              cursor: "pointer",
               background: "#0f172a",
-              color: "#ffffff",
+              color: "#fff",
+              cursor: "pointer",
             }}
           >
             Закрыть
